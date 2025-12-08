@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy Gradle build files and source code
-COPY . .
+COPY src/main/java .
 
 # Build the jar file
 RUN ./gradlew clean build -x test
