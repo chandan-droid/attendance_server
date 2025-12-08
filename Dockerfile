@@ -1,17 +1,22 @@
-# Use official OpenJDK image
-FROM gradle:8.10.0-jdk17 AS builder
-
-# Set working directory
+# Step 1: Build stage
+FROM eclipse-temurin:17-jdk-alpine AS builder
 WORKDIR /app
 
-# Copy Gradle build files and source code
-COPY src/main/java .
+# Copy everything (including gradlew)
+COPY . .
 
-# Build the jar file
-RUN ./gradlew clean build -x test
+# Give execute permission to gradlew
+RUN chmod +x ./gradlew
 
-# Expose port 8080
+# Build the JAR
+RUN ./gradlew clean build -x test --no-daemon
+
+# Step 2: Runtime stage
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+
+# Copy the built JAR from builder stage
+COPY --from=builder /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
-
-# Run the Spring Boot app
-CMD ["java", "-jar", "$(find build/libs -name '*.jar' | head -n 1)"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
