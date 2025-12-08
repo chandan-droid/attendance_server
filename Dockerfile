@@ -1,5 +1,5 @@
 # Use official OpenJDK image
-FROM openjdk:17-jdk-slim
+FROM gradle:8.10.0-jdk17 AS builder
 
 # Set working directory
 WORKDIR /app
