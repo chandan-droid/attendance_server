@@ -40,16 +40,6 @@ public class GeofenceController {
         }
     }
 
-    @PostMapping("/assign/{userId}/{geofenceId}")
-    public ResponseEntity<?> assignGeofenceToUser(@PathVariable Long userId,
-                                                   @PathVariable Long geofenceId) {
-        try {
-            geofenceService.assignGeofenceToUser(userId, geofenceId);
-            return ResponseEntity.ok(new ApiResponse(true, "Geofence assigned to user successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse(false, e.getMessage()));
-        }
-    }
+
 }
 

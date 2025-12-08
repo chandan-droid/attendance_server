@@ -39,18 +39,25 @@ public class AttendanceService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Check if user is ONSITE and validate geofence
-        if (user.getWorkMode() == User.WorkMode.ONSITE) {
-            boolean withinGeofence = geofenceService.isWithinGeofence(
-                    userId,
-                    request.getLatitude(),
-                    request.getLongitude()
-            );
+        // Check if there's an active punch in (without punch out)
+        Optional<Attendance> activePunchIn = attendanceRepository.findLatestUnmatchedPunchIn(userId);
 
-            if (!withinGeofence) {
-                throw new RuntimeException("You are not within the allowed geofence location for punch in");
-            }
+        if (activePunchIn.isPresent()) {
+            throw new RuntimeException("You already have an active punch in. Please punch out first before punching in again.");
         }
+
+        // Check if user is ONSITE and validate geofence
+//        if (user.getWorkMode() == User.WorkMode.ONSITE) {
+//            boolean withinGeofence = geofenceService.isWithinGeofence(
+//                    userId,
+//                    request.getLatitude(),
+//                    request.getLongitude()
+//            );
+//
+//            if (!withinGeofence) {
+//                throw new RuntimeException("You are not within the allowed geofence location for punch in");
+//            }
+//        }
 
         // Validate project and task are provided
         if (request.getProjectId() == null || request.getTaskId() == null) {
@@ -85,17 +92,17 @@ public class AttendanceService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check if user is ONSITE and validate geofence
-        if (user.getWorkMode() == User.WorkMode.ONSITE) {
-            boolean withinGeofence = geofenceService.isWithinGeofence(
-                    userId,
-                    request.getLatitude(),
-                    request.getLongitude()
-            );
-
-            if (!withinGeofence) {
-                throw new RuntimeException("You are not within the allowed geofence location for punch out "+user.getWorkMode());
-            }
-        }
+//        if (user.getWorkMode() == User.WorkMode.ONSITE) {
+//            boolean withinGeofence = geofenceService.isWithinGeofence(
+//                    userId,
+//                    request.getLatitude(),
+//                    request.getLongitude()
+//            );
+//
+//            if (!withinGeofence) {
+//                throw new RuntimeException("You are not within the allowed geofence location for punch out "+user.getWorkMode());
+//            }
+//        }
 
         // Find the latest unmatched punch in
         Optional<Attendance> punchInOpt = attendanceRepository.findLatestUnmatchedPunchIn(userId);
@@ -149,4 +156,3 @@ public class AttendanceService {
         return workSessionRepository.findByUserId(userId);
     }
 }
-
