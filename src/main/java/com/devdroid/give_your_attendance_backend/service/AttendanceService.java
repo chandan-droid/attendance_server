@@ -93,7 +93,7 @@ public class AttendanceService {
             );
 
             if (!withinGeofence) {
-                throw new RuntimeException("You are not within the allowed geofence location for punch out");
+                throw new RuntimeException("You are not within the allowed geofence location for punch out "+user.getWorkMode());
             }
         }
 

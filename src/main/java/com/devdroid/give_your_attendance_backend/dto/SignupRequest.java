@@ -20,5 +20,8 @@ public class SignupRequest {
 
     @NotBlank(message = "Password is required")
     private String password;
-}
 
+    private String role; // EMPLOYEE or ADMIN (optional, defaults to EMPLOYEE)
+
+    private String workMode; // ONSITE or REMOTE (optional, defaults to ONSITE)
+}

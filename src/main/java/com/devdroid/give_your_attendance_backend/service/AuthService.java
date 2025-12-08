@@ -43,8 +43,28 @@ public class AuthService {
         user.setPhone(request.getPhone());
         user.setEmployeeId(request.getEmployeeId());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole(User.Role.EMPLOYEE);
-        user.setWorkMode(User.WorkMode.ONSITE);
+
+        // Set role - default to EMPLOYEE if not provided
+        if (request.getRole() != null && !request.getRole().isEmpty()) {
+            try {
+                user.setRole(User.Role.valueOf(request.getRole().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid role. Must be EMPLOYEE or ADMIN");
+            }
+        } else {
+            user.setRole(User.Role.EMPLOYEE);
+        }
+
+        // Set work mode - default to ONSITE if not provided
+        if (request.getWorkMode() != null && !request.getWorkMode().isEmpty()) {
+            try {
+                user.setWorkMode(User.WorkMode.valueOf(request.getWorkMode().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid work mode. Must be ONSITE or REMOTE");
+            }
+        } else {
+            user.setWorkMode(User.WorkMode.ONSITE);
+        }
 
         User savedUser = userRepository.save(user);
 
