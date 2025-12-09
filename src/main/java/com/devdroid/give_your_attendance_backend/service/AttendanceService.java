@@ -11,6 +11,7 @@ import com.devdroid.give_your_attendance_backend.repository.WorkSessionRepositor
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -154,5 +155,30 @@ public class AttendanceService {
 
     public List<WorkSession> getUserWorkSessions(Long userId) {
         return workSessionRepository.findByUserId(userId);
+    }
+
+    /**
+     * Get total working hours for a specific project for a user.
+     *
+     * @param userId the user ID
+     * @param projectId the project ID
+     * @return total working minutes and formatted hours
+     */
+    public Long getTotalWorkingMinutesForProject(Long userId, Long projectId) {
+        return workSessionRepository.getTotalMinutesForUserAndProject(userId, projectId);
+    }
+
+    /**
+     * Get total working hours for a specific day for a user.
+     *
+     * @param userId the user ID
+     * @param date the date (default to today if null)
+     * @return total working minutes and formatted hours
+     */
+    public Long getTotalWorkingMinutesForDay(Long userId, LocalDate date) {
+        if (date == null) {
+            date = LocalDate.now();
+        }
+        return workSessionRepository.getTotalMinutesForUserAndDate(userId, date);
     }
 }
