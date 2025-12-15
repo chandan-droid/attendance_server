@@ -4,6 +4,8 @@ package com.devdroid.give_your_attendance_backend.controller;
 import com.devdroid.give_your_attendance_backend.dto.ApiResponse;
 import com.devdroid.give_your_attendance_backend.entity.Project;
 import com.devdroid.give_your_attendance_backend.entity.Task;
+import com.devdroid.give_your_attendance_backend.entity.User;
+import com.devdroid.give_your_attendance_backend.repository.UserRepository;
 import com.devdroid.give_your_attendance_backend.service.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -35,14 +37,17 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final UserRepository userRepository;
 
     /**
-     * Constructor injection for the {@link ProjectService}.
+     * Constructor injection for the {@link ProjectService} and {@link UserRepository}.
      *
      * @param projectService service handling project and task business logic
+     * @param userRepository repository for user data access
      */
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, UserRepository userRepository) {
         this.projectService = projectService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -163,6 +168,34 @@ public class ProjectController {
             Long userId = (Long) authentication.getPrincipal();
             List<Task> tasks = projectService.getUserAssignedTasks(userId, projectId);
             return ResponseEntity.ok(new ApiResponse(true, "Tasks retrieved", tasks));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    /**
+     * Retrieve ALL tasks for a project (admin access - no user assignment check).
+     *
+     * <p>This endpoint is for administrators to view all tasks in a project
+     * regardless of user assignment.</p>
+     *
+     * @param projectId id of the project whose tasks are requested
+     * @param authentication the Spring Security authentication object
+     * @return 200 OK with an {@link ApiResponse} containing a list of {@link Task} on success,
+     *         or 400 Bad Request/403 Forbidden with an {@link ApiResponse} on failure
+     */
+    @GetMapping("/{projectId}/tasks/all")
+    public ResponseEntity<?> getAllProjectTasks(@PathVariable Long projectId,
+                                                Authentication authentication) {
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            if (user.getRole() != User.Role.ADMIN) {
+                return ResponseEntity.status(403).body(new ApiResponse(false, "Forbidden"));
+            }
+            List<Task> tasks = projectService.getAllTasksByProject(projectId);
+            return ResponseEntity.ok(new ApiResponse(true, "All tasks retrieved", tasks));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, e.getMessage()));

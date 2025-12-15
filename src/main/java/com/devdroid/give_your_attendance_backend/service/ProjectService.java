@@ -80,4 +80,8 @@ public class ProjectService {
 
         return taskRepository.findByProjectId(projectId);
     }
+
+    public List<Task> getAllTasksByProject(Long projectId) {
+        return taskRepository.findByProjectId(projectId);
+    }
 }
