@@ -32,4 +32,8 @@ public class AttendanceQueryService {
         query.setAdminComment(updatedQuery.getAdminComment());
         return repository.save(query);
     }
+
+    public List<AttendanceQuery> getAllQueries() {
+        return repository.findAll();
+    }
 }

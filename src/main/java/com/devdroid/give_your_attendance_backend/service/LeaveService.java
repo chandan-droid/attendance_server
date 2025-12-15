@@ -32,4 +32,8 @@ public class LeaveService {
         leave.setAdminComment(updatedLeave.getAdminComment());
         return repository.save(leave);
     }
+
+    public List<LeaveApplication> getAllLeaves() {
+        return repository.findAll();
+    }
 }

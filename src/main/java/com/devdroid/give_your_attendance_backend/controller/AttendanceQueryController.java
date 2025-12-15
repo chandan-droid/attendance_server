@@ -33,4 +33,9 @@ public class AttendanceQueryController {
     public ResponseEntity<?> approveQuery(@PathVariable Long id, @RequestBody AttendanceQuery query) {
         return ResponseEntity.ok(queryService.updateStatus(id, query));
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllQueries() {
+        return ResponseEntity.ok(queryService.getAllQueries());
+    }
 }

@@ -33,4 +33,9 @@ public class LeaveController {
     public ResponseEntity<?> approveLeave(@PathVariable Long id, @RequestBody LeaveApplication leave) {
         return ResponseEntity.ok(leaveService.updateStatus(id, leave));
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllLeaves() {
+        return ResponseEntity.ok(leaveService.getAllLeaves());
+    }
 }
