@@ -1,6 +1,6 @@
 package com.devdroid.give_your_attendance_backend.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
