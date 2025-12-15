@@ -28,6 +28,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.flywaydb:flyway-core'
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
