@@ -5,6 +5,7 @@ import com.devdroid.give_your_attendance_backend.dto.PunchRequest;
 import com.devdroid.give_your_attendance_backend.dto.PunchResponse;
 import com.devdroid.give_your_attendance_backend.dto.WorkingHoursResponse;
 import com.devdroid.give_your_attendance_backend.entity.Attendance;
+import com.devdroid.give_your_attendance_backend.entity.User;
 import com.devdroid.give_your_attendance_backend.entity.WorkSession;
 import com.devdroid.give_your_attendance_backend.service.AttendanceService;
 import jakarta.validation.Valid;
@@ -112,6 +113,57 @@ public class AttendanceController {
             Long totalMinutes = attendanceService.getTotalWorkingMinutesForDay(userId, workDate);
             WorkingHoursResponse response = new WorkingHoursResponse(totalMinutes);
             return ResponseEntity.ok(new ApiResponse(true, "Total working hours for " + workDate + " retrieved", response));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    /**
+     * Admin: Get all attendance records for a specific date.
+     *
+     * @param date the date in ISO format (YYYY-MM-DD)
+     * @param authentication the authenticated user (must be admin)
+     * @return all attendance records for the specified date
+     */
+    @GetMapping("/date/{date}")
+    public ResponseEntity<?> getAttendanceByDate(@PathVariable String date,
+                                                  Authentication authentication) {
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            User user = attendanceService.getUserById(userId);
+
+            if (user.getRole() != User.Role.ADMIN) {
+                return ResponseEntity.status(403).body(new ApiResponse(false, "Forbidden: Admin access required"));
+            }
+
+            LocalDate queryDate = LocalDate.parse(date);
+            List<Attendance> attendanceList = attendanceService.getAllAttendanceByDate(queryDate);
+            return ResponseEntity.ok(new ApiResponse(true, "Attendance records for " + date + " retrieved", attendanceList));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    /**
+     * Admin: Get all attendance records across all dates.
+     *
+     * @param authentication the authenticated user (must be admin)
+     * @return all attendance records
+     */
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllAttendance(Authentication authentication) {
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            User user = attendanceService.getUserById(userId);
+
+            if (user.getRole() != User.Role.ADMIN) {
+                return ResponseEntity.status(403).body(new ApiResponse(false, "Forbidden: Admin access required"));
+            }
+
+            List<Attendance> attendanceList = attendanceService.getAllAttendance();
+            return ResponseEntity.ok(new ApiResponse(true, "All attendance records retrieved", attendanceList));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, e.getMessage()));

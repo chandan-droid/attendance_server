@@ -181,4 +181,36 @@ public class AttendanceService {
         }
         return workSessionRepository.getTotalMinutesForUserAndDate(userId, date);
     }
+
+    /**
+     * Admin: Get all attendance records for a specific date.
+     *
+     * @param date the date to query
+     * @return list of all attendance records for that date
+     */
+    public List<Attendance> getAllAttendanceByDate(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+        return attendanceRepository.findByPunchTimeBetween(startOfDay, endOfDay);
+    }
+
+    /**
+     * Admin: Get all attendance records.
+     *
+     * @return list of all attendance records
+     */
+    public List<Attendance> getAllAttendance() {
+        return attendanceRepository.findAll();
+    }
+
+    /**
+     * Get user by ID.
+     *
+     * @param userId the user ID
+     * @return the User entity
+     */
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }

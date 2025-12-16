@@ -29,4 +29,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Optional<Attendance> findLatestUnmatchedPunchOut(@Param("userId") Long userId);
 
     List<Attendance> findByUserIdOrderByPunchTimeDesc(Long userId);
+
+    List<Attendance> findByPunchTimeBetween(java.time.LocalDateTime startOfDay, java.time.LocalDateTime endOfDay);
 }
